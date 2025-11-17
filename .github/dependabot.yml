@@ -1,14 +1,37 @@
 version: 2
 updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "04:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "⬆️ deps"
+      include: "scope"
+    rebase-strategy: "auto"
+    labels:
+      - "dependencies"
+      - "python"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+      time: "05:00"
+      timezone: "Asia/Kolkata"
+    labels:
+      - "ci"
+      - "automation"
+
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "daily"
+      time: "05:30"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "node"
