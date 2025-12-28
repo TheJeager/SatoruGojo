@@ -1,7 +1,7 @@
 pyrogram==2.0.106
 tgcrypto==1.2.5
 
-pymongo==4.6.1
+pymongo==4.15.5
 python-dotenv==1.0.1
 
 yt-dlp==2025.12.08
