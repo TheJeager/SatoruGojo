@@ -6,4 +6,4 @@ python-dotenv==1.0.1
 
 yt-dlp==2025.12.08
 
-aiofiles==23.2.1
+aiofiles==25.1.0
