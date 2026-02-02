@@ -43,7 +43,7 @@ Inspired by the power and precision of *Gojo Satoru* from Jujutsu Kaisen, the bo
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/TheErenJeager/SatoruGojo.git
+   git clone https://github.com/TheJeager/SatoruGojo.git
    cd SatoruGojo
    ```
 
@@ -102,5 +102,5 @@ This project is licensed under the [MIT License](LICENSE).
 ## ✨ Credits
 
 - Inspired by: *Gojo Satoru (Jujutsu Kaisen)*
-- Developed by [TheErenJeager](https://github.com/TheErenJeager)
+- Developed by [Eren Jeager](https://github.com/TheJeager)
 - Powered by Python, FFmpeg, and Telegram Bot API
