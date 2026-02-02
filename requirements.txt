@@ -4,6 +4,6 @@ tgcrypto==1.2.5
 pymongo==4.15.5
 python-dotenv==1.2.1
 
-yt-dlp==2025.12.08
+yt-dlp==2026.1.31
 
 aiofiles==25.1.0
