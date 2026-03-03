@@ -1,32 +1,32 @@
-import os
-import time
-import threading
-import subprocess
-import logging
 import asyncio
+import logging
+import os
+import subprocess
 import tempfile
+import threading
+import time
 from collections import defaultdict, deque
-from typing import Optional, List, Dict, Tuple
 from datetime import datetime
+from typing import Dict, List, Optional, Tuple
 
 import yt_dlp
 from pyrogram import Client, filters
 from pyrogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
     CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
     Message,
 )
 
 try:
     from config import (
-        OWNER_ID,
-        API_ID,
         API_HASH,
+        API_ID,
         BOT_TOKEN,
         DEFAULT_RTMP_URL,
         LOGGER_ID,
         MONGO_URL,
+        OWNER_ID,
     )
 except ImportError:
     OWNER_ID = int(os.getenv("OWNER_ID", 0))
@@ -231,7 +231,10 @@ def ytdl_extract_with_fallback(
 
 
 def run_ffmpeg(
-    chat_id: int, cmd: List[str], input_file: Optional[str] = None, stream_data: Dict = None
+    chat_id: int,
+    cmd: List[str],
+    input_file: Optional[str] = None,
+    stream_data: Dict = None,
 ) -> None:
     try:
         stream_status[chat_id] = "streaming"
@@ -415,8 +418,7 @@ async def show_commands(_, query: CallbackQuery):
 /broadcast <msg> - Broadcast message (admin only)"""
 
     back = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("Back", callback_data="back")]]
-    )
+        [[InlineKeyboardButton("Back", callback_data="back")]])
     await query.message.edit_text(commands_text, reply_markup=back)
 
 
@@ -464,7 +466,9 @@ async def setkey(_, m: Message):
 
     rtmp_keys[m.chat.id] = m.command[1]
     await m.reply("RTMP key configured.")
-    await send_log(m.from_user.id, m.from_user.username or "unknown", m.chat.id, "SETKEY")
+    await send_log(
+        m.from_user.id, m.from_user.username or "unknown", m.chat.id, "SETKEY"
+    )
 
 
 @bot.on_message(filters.command("ping"))
@@ -501,18 +505,14 @@ async def stop(_, m: Message):
     stop_ffmpeg(m.chat.id)
     queues[m.chat.id].clear()
     await m.reply("Stream stopped.")
-    await send_log(
-        m.from_user.id, m.from_user.username or "unknown", m.chat.id, "STOP"
-    )
+    await send_log(m.from_user.id, m.from_user.username or "unknown", m.chat.id, "STOP")
 
 
 @bot.on_message(filters.command("skip"))
 async def skip(_, m: Message):
     stop_ffmpeg(m.chat.id)
     await m.reply("Stream skipped.")
-    await send_log(
-        m.from_user.id, m.from_user.username or "unknown", m.chat.id, "SKIP"
-    )
+    await send_log(m.from_user.id, m.from_user.username or "unknown", m.chat.id, "SKIP")
     await start_next_in_queue(m.chat.id)
 
 
@@ -555,10 +555,7 @@ async def broadcast(_, m: Message):
 @bot.on_message(filters.command("play"))
 async def play(_, m: Message):
     if not m.reply_to_message or not (
-        m.reply_to_message.audio
-        or m.reply_to_message.voice
-        or m.reply_to_message.video
-    ):
+            m.reply_to_message.audio or m.reply_to_message.voice or m.reply_to_message.video):
         return await m.reply("Reply with audio or video file.")
 
     url = get_rtmp_url(m.chat.id)
@@ -619,10 +616,7 @@ async def play(_, m: Message):
 @bot.on_message(filters.command("playaudio"))
 async def playaudio(_, m: Message):
     if not m.reply_to_message or not (
-        m.reply_to_message.audio
-        or m.reply_to_message.voice
-        or m.reply_to_message.video
-    ):
+            m.reply_to_message.audio or m.reply_to_message.voice or m.reply_to_message.video):
         return await m.reply("Reply with audio or video file.")
 
     url = get_rtmp_url(m.chat.id)
@@ -735,9 +729,7 @@ async def ytplay(_, m: Message):
             return await msg.edit("Failed to fetch stream.")
 
         stream_url = info.get("url") or (
-            info.get("formats", [{}])[-1].get("url")
-            if info.get("formats")
-            else None
+            info.get("formats", [{}])[-1].get("url") if info.get("formats") else None
         )
 
         if not stream_url:
@@ -801,9 +793,7 @@ async def ytaudio(_, m: Message):
             return await msg.edit("Failed to fetch stream.")
 
         stream_url = info.get("url") or (
-            info.get("formats", [{}])[-1].get("url")
-            if info.get("formats")
-            else None
+            info.get("formats", [{}])[-1].get("url") if info.get("formats") else None
         )
 
         if not stream_url:

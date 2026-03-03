@@ -1,6 +1,7 @@
-from pymongo import MongoClient
 from datetime import datetime
 from typing import Dict, List, Optional
+
+from pymongo import MongoClient
 
 
 class Database:
@@ -17,14 +18,14 @@ class Database:
 
     async def add_user(self, user_id: int, username: str) -> None:
         try:
-            self.users.update_one(
-                {"user_id": user_id},
-                {
-                    "$set": {"username": username, "last_seen": datetime.now()},
-                    "$setOnInsert": {"user_id": user_id, "joined_at": datetime.now()},
-                },
-                upsert=True,
-            )
+            self.users.update_one({"user_id": user_id},
+                                  {"$set": {"username": username,
+                                            "last_seen": datetime.now()},
+                                   "$setOnInsert": {"user_id": user_id,
+                                                    "joined_at": datetime.now()},
+                                   },
+                                  upsert=True,
+                                  )
         except Exception as e:
             print(f"Error adding user: {e}")
 
@@ -58,13 +59,13 @@ class Database:
 
             total_streams = len(streams)
             successful_streams = len(
-                [s for s in streams if s["status"] == "completed"]
-            )
-            failed_streams = len([s for s in streams if s["status"] == "error"])
+                [s for s in streams if s["status"] == "completed"])
+            failed_streams = len(
+                [s for s in streams if s["status"] == "error"])
             total_duration = sum(s.get("duration", 0) for s in streams)
             avg_duration = (
-                total_duration / successful_streams if successful_streams > 0 else 0
-            )
+                total_duration /
+                successful_streams if successful_streams > 0 else 0)
 
             return {
                 "user_id": user_id,
@@ -91,7 +92,11 @@ class Database:
             print(f"Error getting all users: {e}")
             return []
 
-    async def add_broadcast(self, admin_id: int, message: str, sent_to: int) -> None:
+    async def add_broadcast(
+            self,
+            admin_id: int,
+            message: str,
+            sent_to: int) -> None:
         try:
             self.broadcasts.insert_one(
                 {
@@ -105,8 +110,7 @@ class Database:
             print(f"Error adding broadcast: {e}")
 
     async def get_stream_stats_by_type(
-        self, user_id: int, stream_type: str
-    ) -> int:
+            self, user_id: int, stream_type: str) -> int:
         try:
             count = self.streams.count_documents(
                 {"user_id": user_id, "stream_type": stream_type}
@@ -140,10 +144,10 @@ class Database:
     async def get_recent_streams(self, limit: int = 10) -> List[Dict]:
         try:
             return list(
-                self.streams.find({}, {"_id": 0})
-                .sort("timestamp", -1)
-                .limit(limit)
-            )
+                self.streams.find(
+                    {}, {
+                        "_id": 0}).sort(
+                    "timestamp", -1).limit(limit))
         except Exception as e:
             print(f"Error getting recent streams: {e}")
             return []
