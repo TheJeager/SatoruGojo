@@ -93,9 +93,7 @@ def build_home_keyboard() -> InlineKeyboardMarkup:
             ],
             [
                 InlineKeyboardButton("Support", url="https://t.me/RadhaSprt"),
-                InlineKeyboardButton(
-                    "Updates", url="https://t.me/CodingAssociation"
-                ),
+                InlineKeyboardButton("Updates", url="https://t.me/CodingAssociation"),
             ],
         ]
     )
