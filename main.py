@@ -76,6 +76,91 @@ YTDL_OPTS_NO_COOKIES = {
     "socket_timeout": 30,
 }
 
+WELCOME_IMAGE = "https://i.ibb.co/QFt3Z9bC/tmpg1y9wbs8.jpg"
+
+
+def build_home_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("Quick Start", callback_data="help_quick")],
+            [
+                InlineKeyboardButton("Stream Commands", callback_data="help_stream"),
+                InlineKeyboardButton("Control", callback_data="help_control"),
+            ],
+            [
+                InlineKeyboardButton("Info", callback_data="help_info"),
+                InlineKeyboardButton("Admin", callback_data="help_admin"),
+            ],
+            [
+                InlineKeyboardButton("Support", url="https://t.me/RadhaSprt"),
+                InlineKeyboardButton(
+                    "Updates", url="https://t.me/CodingAssociation"
+                ),
+            ],
+        ]
+    )
+
+
+def build_back_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        [[InlineKeyboardButton("⬅ Back", callback_data="home")]]
+    )
+
+
+def get_start_text(username: Optional[str]) -> str:
+    mention = f"@{username}" if username else "there"
+    return (
+        f"Hello {mention}\n\n"
+        "I am Gojo Satoru, your RTMP streaming assistant for Telegram.\n\n"
+        "Quick Setup\n"
+        "1) Use /setkey <your_key>\n"
+        "2) Send /play by replying to media\n"
+        "3) Or stream from links with /uplay, /ytplay, /ytaudio\n\n"
+        "Tap the buttons below for inline help by category."
+    )
+
+
+HELP_SECTIONS = {
+    "help_quick": (
+        "Quick Start",
+        "Start Here\n\n"
+        "• /setkey <key> → set your RTMP stream key\n"
+        "• /play → reply to a media file and start video+audio stream\n"
+        "• /playaudio → reply to media for audio-only stream\n"
+        "• /uplay <url> → stream from a direct media URL",
+    ),
+    "help_stream": (
+        "Stream Commands",
+        "Streaming\n\n"
+        "• /play\n"
+        "• /playaudio\n"
+        "• /uplay <url>\n"
+        "• /ytplay <query>\n"
+        "• /ytaudio <query>",
+    ),
+    "help_control": (
+        "Control Commands",
+        "Control\n\n"
+        "• /stop → stop stream and clear queue\n"
+        "• /skip → skip current stream\n"
+        "• /queue → view queue list",
+    ),
+    "help_info": (
+        "Info Commands",
+        "Information\n\n"
+        "• /status → current stream state\n"
+        "• /stats → your stream stats\n"
+        "• /ping → check latency\n"
+        "• /help → open full help",
+    ),
+    "help_admin": (
+        "Admin Commands",
+        "Admin\n\n"
+        "• /broadcast <message> → send message to all users\n"
+        "• /setkey <key> → only bot owner can set RTMP key",
+    ),
+}
+
 
 def build_ffmpeg_video(input_file: str, rtmp_url: str) -> List[str]:
     return [
@@ -365,33 +450,12 @@ def is_admin(user_id: int) -> bool:
 @bot.on_message(filters.command("start"))
 async def start(_, m: Message):
     await db.add_user(m.from_user.id, m.from_user.username or "unknown")
-
-    buttons = InlineKeyboardMarkup(
-        [
-            [InlineKeyboardButton("Commands", callback_data="cmds")],
-            [
-                InlineKeyboardButton("Support", url="https://t.me/RadhaSprt"),
-                InlineKeyboardButton("Updates", url="https://t.me/CodingAssociation"),
-            ],
-        ]
-    )
-
-    text = f"""Hey @{m.from_user.username}
-
-I'm Gojo Satoru, a RTMP Telegram streaming bot with faster playback.
-
-FEATURES:
-- Ultra-low latency streaming
-- Queue-based media management
-- YouTube & direct URL support
-- Optimized FFmpeg encoding
-- Fast video/audio extraction
-
-Start streaming with /help or /setkey"""
+    buttons = build_home_keyboard()
+    text = get_start_text(m.from_user.username)
 
     try:
         await m.reply_photo(
-            photo="https://i.ibb.co/QFt3Z9bC/tmpg1y9wbs8.jpg",
+            photo=WELCOME_IMAGE,
             caption=text,
             reply_markup=buttons,
         )
@@ -399,59 +463,26 @@ Start streaming with /help or /setkey"""
         await m.reply(text, reply_markup=buttons)
 
 
-@bot.on_callback_query(filters.regex("cmds"))
-async def show_commands(_, query: CallbackQuery):
-    commands_text = """COMMANDS:
-
-/setkey <key> - Set RTMP stream key
-/play - Reply with media (video+audio)
-/playaudio - Reply with media (audio only)
-/uplay <url> - Stream direct URL
-/ytplay <query> - Stream YouTube (video)
-/ytaudio <query> - Stream YouTube (audio)
-/stop - Stop stream and clear queue
-/skip - Skip current stream
-/queue - Show queue list
-/ping - Check latency
-/status - Stream status
-/stats - Your stream statistics
-/broadcast <msg> - Broadcast message (admin only)"""
-
-    back = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("Back", callback_data="back")]])
-    await query.message.edit_text(commands_text, reply_markup=back)
+@bot.on_callback_query(filters.regex("^help_(quick|stream|control|info|admin)$"))
+async def show_help_section(_, query: CallbackQuery):
+    _, body = HELP_SECTIONS.get(query.data, ("Help", "No help section found."))
+    await query.message.edit_text(body, reply_markup=build_back_keyboard())
 
 
-@bot.on_callback_query(filters.regex("back"))
-async def back(_, query: CallbackQuery):
-    buttons = InlineKeyboardMarkup(
-        [
-            [InlineKeyboardButton("Commands", callback_data="cmds")],
-            [
-                InlineKeyboardButton("Support", url="https://t.me/RadhaSprt"),
-                InlineKeyboardButton("Updates", url="https://t.me/CodingAssociation"),
-            ],
-        ]
-    )
-
-    text = f"""Hey @{query.from_user.username}
-
-I'm Gojo Satoru, a RTMP Telegram streaming bot with faster playback.
-
-FEATURES:
-- Ultra-low latency streaming
-- Queue-based media management
-- YouTube & direct URL support
-- Optimized FFmpeg encoding
-- Fast video/audio extraction
-
-Start streaming with /help or /setkey"""
-
+@bot.on_callback_query(filters.regex("^home$"))
+async def show_home(_, query: CallbackQuery):
+    text = get_start_text(query.from_user.username)
     try:
-        await query.message.edit_caption(caption=text, reply_markup=buttons)
+        await query.message.edit_caption(
+            caption=text,
+            reply_markup=build_home_keyboard(),
+        )
     except Exception:
         try:
-            await query.message.edit_text(text, reply_markup=buttons)
+            await query.message.edit_text(
+                text,
+                reply_markup=build_home_keyboard(),
+            )
         except Exception:
             pass
 
@@ -837,34 +868,12 @@ async def ytaudio(_, m: Message):
 
 @bot.on_message(filters.command("help"))
 async def help_cmd(_, m: Message):
-    help_text = """Help - RTMP Streaming Bot
-
-BASIC COMMANDS:
-/start - Start the bot
-/setkey <key> - Set your RTMP stream key
-/help - Show this help message
-
-STREAMING COMMANDS:
-/play - Stream Telegram media (video+audio)
-/playaudio - Stream Telegram media (audio only)
-/uplay <url> - Stream direct URL
-/ytplay <query> - Stream YouTube video
-/ytaudio <query> - Stream YouTube audio only
-
-CONTROL COMMANDS:
-/stop - Stop current stream
-/skip - Skip to next in queue
-/queue - View queue list
-
-INFO COMMANDS:
-/status - Check stream status
-/stats - View your statistics
-/ping - Check bot latency
-
-ADMIN COMMANDS:
-/broadcast <msg> - Send message to all users"""
-
-    await m.reply(help_text)
+    help_text = (
+        "RTMP Streaming Help\n\n"
+        "Use inline categories below to quickly find commands.\n"
+        "You can always begin with /setkey and then /play."
+    )
+    await m.reply(help_text, reply_markup=build_home_keyboard())
 
 
 if __name__ == "__main__":
