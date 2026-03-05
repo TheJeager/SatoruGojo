@@ -1,13 +1,9 @@
-import os
+from satoru_gojo.config import settings
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
-OWNER_ID = int(os.getenv("OWNER_ID", 0))
-API_ID = int(os.getenv("API_ID", 0))
-API_HASH = os.getenv("API_HASH", "")
-BOT_TOKEN = os.getenv("BOT_TOKEN", "")
-DEFAULT_RTMP_URL = "rtmps://dc5-1.rtmp.t.me/s/"
-LOGGER_ID = int(os.getenv("LOGGER_ID", 0))
-MONGO_URL = os.getenv("MONGO_URL", "")
+API_ID = settings.api_id
+API_HASH = settings.api_hash
+BOT_TOKEN = settings.bot_token
+OWNER_ID = settings.owner_id
+LOGGER_ID = settings.logger_id
+MONGO_URL = settings.mongo_url
+DEFAULT_RTMP_URL = settings.default_rtmp_base
