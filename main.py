@@ -750,7 +750,7 @@ async def ytplay(_, m: Message):
 
     try:
         loop = asyncio.get_event_loop()
-        info, used_cookies = await loop.run_in_executor(
+        info, _used_cookies = await loop.run_in_executor(
             None, lambda: ytdl_extract_with_fallback(query, video=True)
         )
 
@@ -774,7 +774,6 @@ async def ytplay(_, m: Message):
             "caption": f"Streaming: {title}\nDuration: {duration}",
             "thumbnail": None,
             "msg": msg,
-            "audio_url": stream_url,
             "ffmpeg_cmd": build_ffmpeg_video(stream_url, url),
             "user_id": m.from_user.id,
             "username": m.from_user.username or "unknown",
@@ -814,7 +813,7 @@ async def ytaudio(_, m: Message):
 
     try:
         loop = asyncio.get_event_loop()
-        info, used_cookies = await loop.run_in_executor(
+        info, _used_cookies = await loop.run_in_executor(
             None, lambda: ytdl_extract_with_fallback(query, video=False)
         )
 
