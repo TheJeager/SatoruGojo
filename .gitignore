@@ -1,0 +1,9 @@
+.env
+.env.*
+__pycache__/
+*.py[cod]
+*.session
+*.session-journal
+stream.log
+cookies.txt
+*.cookie
